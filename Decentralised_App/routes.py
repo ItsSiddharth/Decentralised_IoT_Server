@@ -10,6 +10,8 @@ import io
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
+from matplotlib.backends.backend_svg import FigureCanvasSVG
+import base64
 
 from Decentralised_App import app, db
 from models import Field
@@ -31,8 +33,10 @@ def create_figure():
 def home():
 	fig = create_figure()
 	output = io.BytesIO()
+	fig.savefig(output)
 	FigureCanvas(fig).print_png(output)
-	return Response(output.getvalue(), mimetype='image/png')
+	plot_url = base64.b64encode(output.getvalue()).decode('utf8')
+	return render_template('index.html', plot_url=plot_url)
 
 @app.route("/register/<int:FieldID>", methods=['GET', 'POST'])
 def register(FieldID):
